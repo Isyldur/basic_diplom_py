@@ -14,7 +14,18 @@ class YaUpload:
     def create_dir(self, dir_path):
         url = 'https://cloud-api.yandex.net/v1/disk/resources'
         headers = {'Content-Type': 'application/json', 'Authorization': f'OAuth {self.token}'}
-        requests.put(url, params={'path': f'{dir_path}'}, headers=headers)
+        if type(dir_path) == str:
+            dir_list = dir_path.split('/')
+        else:
+            print('Неверный путь')
+            logging.error('Не удалось создать папку. Неверный путь')
+        dir_p = ''
+        for directory in dir_list:
+            if dir_p == '':
+                dir_p = directory
+            else:
+                dir_p += f'/{directory}'
+            requests.put(url, params={'path': dir_p}, headers=headers)
 
     def upload_photo(self, photo_dict: dict, path):
         headers = {'Content-Type': 'application/json', 'Authorization': f'OAuth {self.token}'}
@@ -52,10 +63,9 @@ class YaUpload:
 
 
 if __name__ == '__main__':
-    oktoken = ''
-    vktoken = ''
+    vktoken = ''  # токен вк
     begvk = Vk.VkPhoto('begemot_korovin', vktoken)
-    ya_token = ''
+    ya_token = ''  # токен rest api yandex
     ya = YaUpload(ya_token)
     ya.backup_photos(begvk)
     # ya.backup_photos(begvk, False)
